@@ -20,7 +20,7 @@ export interface IBlog {
   status: BlogStatus;
   category_id: number;
   cover: string | null;
-  tags: ITag[];
+  tags: Map<TagType, ITag>;
   views: number;
   likes: number;
   meta_title: string;
@@ -67,18 +67,11 @@ const blogSchema = new Schema<IBlog>(
       default: null,
     },
     tags: {
-      type: [
+      type: Map,
+      of: [
         {
-          tag_type: { type: Number, enum: TagType },
-          users: [
-            {
-              type: mongoose.Schema.Types.ObjectId,
-              ref: "user",
-            },
-          ],
-          tag_name: {
-            type: String,
-          },
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "user",
         },
       ],
     },
@@ -122,10 +115,10 @@ function find_prehook(
   this: mongoose.Query<IBlog[], IBlog>,
   next: mongoose.CallbackWithoutResultAndOptionalError,
 ) {
-  this.populate<{ tags: { users: HydratedDocument<IUser> } }>(
-    "tags.users",
-    "_id name email bio",
-  );
+  this.populate({
+    path: "tags.Author",
+    select: "_id name email bio",
+  });
   next();
 }
 

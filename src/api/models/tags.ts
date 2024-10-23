@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 export enum TagType {
   Author,
@@ -8,16 +8,15 @@ export enum TagType {
   Other,
 }
 
-interface BaseTag {
-  tag_type: Exclude<TagType, TagType.Other>;
-  users: mongoose.Schema.Types.ObjectId[];
-}
-
 // TODO: discuss if it is required or we can remove it (by only extending the enum for this stuff)
-interface OtherTag {
-  tag_type: TagType.Other;
-  tag_name: string;
+export interface ITag {
+  tag_name?: string;
   users: mongoose.Schema.Types.ObjectId[];
 }
 
-export type ITag = BaseTag | OtherTag;
+// export const tagSchema = new Schema<ITag>([
+//   {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: "user",
+//   },
+// ]);
